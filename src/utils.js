@@ -63,3 +63,32 @@ export const riskMetric = priceData => {
 
   return spacerArray;
 }
+
+
+export const adjustedRisk = (priceData) => {
+  const riskLevels = riskMetric(priceData);
+
+  let adjuster = 1;
+  const adjusterMultiplier = .0003;
+
+  let pointer = 365;
+
+  while (pointer < riskLevels.length) {
+    riskLevels[pointer] = riskLevels[pointer] * adjuster;
+    pointer++;
+    adjuster += adjusterMultiplier;
+  }
+
+  const minRisk = Math.min(...riskLevels);
+  const maxRisk = Math.max(...riskLevels);
+
+  pointer = 365;
+
+  while(pointer < riskLevels.length) {
+    riskLevels[pointer] = (riskLevels[pointer] - minRisk) / maxRisk;
+    pointer++;
+  }
+
+
+  return riskLevels;
+}

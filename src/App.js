@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Airtable from 'airtable';
-import { sma, riskMetric } from './utils';
+import { sma, adjustedRisk } from './utils';
 import { Line } from 'react-chartjs-2';
 
 
@@ -46,7 +46,7 @@ function App() {
     });
   }, [])
   let btcSMA = sma(btcPriceData, 365);
-  let btcRisk = riskMetric(btcPriceData);
+  let btcRisk = adjustedRisk(btcPriceData);
 
   const options = {
     scales: {
