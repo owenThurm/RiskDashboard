@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from "react";
-import Airtable from 'airtable';
-import { sma, adjustedRisk } from './utils';
+import { adjustedRisk } from './utils';
 import { Line } from 'react-chartjs-2';
-
+import axios from 'axios';
 
 function App() {
   const [btcData, setBtcData] = useState([]);
   const [btcPriceData, setBtcPriceData] = useState([]);
   const [btcDates, setBtcDates] = useState([]);
-  const [riskValues, setRiskValues] = useState([]);
 
   let priceData = []
   let dates = []
@@ -18,34 +16,14 @@ function App() {
   })
 
   useEffect(() => {
-    console.log('#^%#$*&#^%*@&$*@(^%FETCHING.......')
-    Airtable.configure({
-      endpointUrl: 'https://api.airtable.com',
-      apiKey: 'keyKV2aqdKylxBU9g'
-    });
-    let base = Airtable.base('appJLSvjDzrX3ac9z');
-    let btcDataTable = base('btcpricehistory');
-    btcDataTable.select({
-      view: 'Grid view',
-    }).all().then(data => {
-      setBtcData(data);
-      let btcPriceData = data.map(record => record.fields.Price);
-      let btcDates = data.map(record => record.fields.Date);
-      let riskValues = data.map(record => {
-
-
-
-
-        return 0;
-      });
-
-
-
-      setBtcPriceData(btcPriceData);
-      setBtcDates(btcDates);
+    axios.get("http://localhost:8000/api/data").then(response => {
+      console.log(response);
+      setBtcPriceData(response.data.prices)
+      setBtcDates(response.data.dates)
+    }).catch(err => {
+      console.log(err);
     });
   }, [])
-  let btcSMA = sma(btcPriceData, 365);
   let btcRisk = adjustedRisk(btcPriceData);
 
   const options = {
@@ -87,10 +65,6 @@ function App() {
       }
     ],
   };
-
-
-
-
 
   return (
     <div className="App">
